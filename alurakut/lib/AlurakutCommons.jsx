@@ -8,8 +8,8 @@ const v = '1';
 
 function Link({ href, children, ...props }) {
   return (
-    <NextLink href={href} passHref>
-      <a legacyBehavior {...props}>
+    <NextLink legacyBehavior href={href} passHref>
+      <a {...props}>
         {children}
       </a>
     </NextLink>
