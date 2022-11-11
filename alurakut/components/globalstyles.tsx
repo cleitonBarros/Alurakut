@@ -21,6 +21,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+   
   }
 
   #__next{
@@ -32,7 +33,16 @@ const GlobalStyle = createGlobalStyle`
   img{
     max-width: 100%;
     height: auto;
-    display: block;
+    display: block;  
+  }
+
+  @media(max-width: 860px) {
+
+    img.profileImg {
+        
+      max-width: 50%;
+      margin:0  auto
+    }
   }
 
   ${AlurakutStyles}

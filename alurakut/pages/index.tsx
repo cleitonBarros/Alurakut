@@ -3,7 +3,7 @@ import React from 'react'
 import MainGrid from '../components/MainGrid'
 import Box from '../components/Box'
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../lib/AlurakutCommons'
-import {ProfileRelationsBoxWrapper} from '../components/profileRalationsArea'
+import {ProfileRelationsBoxWrapper} from '../components'
 
 function ProfileSiderBar(Props: any){
   return(
@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
   <>
-  <AlurakutMenu githubUser={undefined} />
+  <AlurakutMenu githubUser={githubUser} />
   <MainGrid>
     <div className="profileArea" style ={{ gridArea: 'profileArea'}}>
       <ProfileSiderBar githubUser={githubUser} /> 
