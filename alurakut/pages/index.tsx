@@ -122,7 +122,7 @@ function ProfileRelationsBox(Props:any){
                   CreateSlug: githubUser,
                 }
 
-                fetch('/Api/comunidades',{
+                fetch('/api/comunidades',{
                   method: 'POST',
                   headers:{
                     'Content-Type': 'application/json',
