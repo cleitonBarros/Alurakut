@@ -1,11 +1,13 @@
 
 import React from 'react'
 import MainGrid from '../components/MainGrid'
+import nookies from 'nookies';
+import jwt from 'jsonwebtoken';
 import Box from '../components/Box'
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../lib/AlurakutCommons'
 import {ProfileRelationsBoxWrapper} from '../components'
 
-function ProfileSiderBar(Props: any){
+function ProfileSiderBar(Props){
   return(
     <Box as="aside">
     <img src={`https://github.com/${Props.githubUser}.png`} alt={`imagem de perfil de ${Props.githubUser}`} style={{borderRadius: '8px'}}/>
@@ -21,8 +23,8 @@ function ProfileSiderBar(Props: any){
   )
 }
 
-export default function Home() {
-  const githubUser = 'cleitonBarros'
+export default function Home(props) {
+  const usuarioAleatorio = props.githubUser
   const [comunidades, setComunidades]  = React.useState([]);
   
   const pessoasFavoritas = [
@@ -71,7 +73,7 @@ export default function Home() {
 
   }, [])
 
-function ProfileRelationsBox(Props:any){
+function ProfileRelationsBox(Props){
     return(
       <ProfileRelationsBoxWrapper>
         <h2 className="smallTitle">
@@ -96,10 +98,10 @@ function ProfileRelationsBox(Props:any){
   
   return (
   <>
-  <AlurakutMenu githubUser={githubUser} />
+  <AlurakutMenu githubUser={usuarioAleatorio} />
   <MainGrid>
     <div className="profileArea" style ={{ gridArea: 'profileArea'}}>
-      <ProfileSiderBar githubUser={githubUser} /> 
+      <ProfileSiderBar githubUser={usuarioAleatorio} /> 
     </div>
     <div className="welcomeArea" style ={{ gridArea: 'welcomeArea'}}>
       <Box as="aside">
@@ -119,7 +121,7 @@ function ProfileRelationsBox(Props:any){
                 const comunidade = {
                   title: dadosDoForm.get('title'),
                   imageUrl: dadosDoForm.get('imagem'),
-                  CreateSlug: githubUser,
+                  CreateSlug: usuarioAleatorio,
                 }
 
                 fetch('/api/comunidades',{
@@ -199,4 +201,30 @@ function ProfileRelationsBox(Props:any){
   </MainGrid>
   </>
   )
+}
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const { isAuthenticated } = await fetch('https://alurakut.vercel.app/api/auth', {
+    headers: {
+        Authorization: token
+      }
+  })
+  .then((resposta) => resposta.json())
+
+  if(!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  const { githubUser } = jwt.decode(token);
+  return {
+    props: {
+      githubUser
+    }, // will be passed to the page component as props
+  }
 }
