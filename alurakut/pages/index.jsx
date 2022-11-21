@@ -1,11 +1,11 @@
 
 import React from 'react'
-import MainGrid from '../components/MainGrid'
+import MainGrid from '../src/components/MainGrid'
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
-import Box from '../components/Box'
-import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../lib/AlurakutCommons'
-import {ProfileRelationsBoxWrapper} from '../components'
+import Box from '../src/components/Box'
+import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
+import {ProfileRelationsBoxWrapper} from '../src/components'
 
 function ProfileSiderBar(Props){
   return(

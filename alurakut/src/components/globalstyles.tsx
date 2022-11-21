@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components'
-import {AlurakutStyles} from '../lib/AlurakutCommons.jsx'
+import {AlurakutStyles} from '../lib/AlurakutCommons'
 
 const GlobalStyle = createGlobalStyle`
 
