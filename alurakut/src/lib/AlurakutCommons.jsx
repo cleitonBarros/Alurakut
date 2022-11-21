@@ -1,6 +1,11 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
+import { destroyCookie } from 'nookies';
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const BASE_URL = 'http://alurakut.vercel.app/';
 const v = '1';
@@ -35,7 +40,13 @@ export function AlurakutMenu({ githubUser }) {
         </nav>
 
         <nav>
-          <a href={`/logout`}>
+          <a href="/login"
+            onClick={() => {
+              destroyCookie(null, 'token');
+              destroyCookie(null, 'userId');
+            }}
+          
+          >
             Sair
           </a>
           <div>
@@ -192,36 +203,54 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
 // AlurakutProfileSidebarMenuDefault
 // ================================================================================================================
 export function AlurakutProfileSidebarMenuDefault() {
+  function handleShowDevelopmentInfo(e) {
+    e.preventDefault();
+
+    toast.info('Funcionalidade em desenvolvimento! 👀', {
+      position: 'bottom-right',
+      autoClose: 4000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
   return (
     <AlurakutProfileSidebarMenuDefault.Wrapper>
       <nav>
-        <a href="/">
+        <Link href="/">
           <img src={`${BASE_URL}/icons/user.svg`} />
             Perfil
-          </a>
-        <a href="/">
+          </Link>
+        <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
           <img src={`${BASE_URL}/icons/book.svg`} />
             Recados
-          </a>
-        <a href="/">
+          </Link>
+        <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
           <img src={`${BASE_URL}/icons/camera.svg`} />
             Fotos
-          </a>
-        <a href="/">
+          </Link>
+        <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
           <img src={`${BASE_URL}/icons/sun.svg`} />
             Depoimentos
-          </a>
+          </Link>
       </nav>
       <hr />
       <nav>
-        <a href="/">
+        <Link href="/" onClick={(e) => handleShowDevelopmentInfo(e)}>
           <img src={`${BASE_URL}/icons/plus.svg`} />
             GitHub Trends
-          </a>
-        <a href="/logout">
+          </Link>
+        <Link href="/login"
+         onClick={() => {
+          destroyCookie(null, 'token');
+          destroyCookie(null, 'userId');
+        }}
+        >
           <img src={`${BASE_URL}//icons/logout.svg`} />
             Sair
-          </a>
+          </Link>
       </nav>
     </AlurakutProfileSidebarMenuDefault.Wrapper>
   )

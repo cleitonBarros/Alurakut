@@ -1,11 +1,22 @@
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from 'react';
 import React from 'react'
-import MainGrid from '../src/components/MainGrid'
 import nookies from 'nookies';
 import jwt from 'jsonwebtoken';
+
+import { 
+  AlurakutMenu, 
+  AlurakutProfileSidebarMenuDefault, 
+  OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
+
+
+import MainGrid from '../src/components/MainGrid'
 import Box from '../src/components/Box'
-import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons'
 import {ProfileRelationsBoxWrapper} from '../src/components'
+import Scrap from '../src/components/Scrap';
+
+import { useCheckAuth } from '../src/hooks/useCheckAuth';
 
 function ProfileSiderBar(Props){
   return(
@@ -24,28 +35,40 @@ function ProfileSiderBar(Props){
 }
 
 export default function Home(props) {
-  const usuarioAleatorio = props.githubUser
-  const [comunidades, setComunidades]  = React.useState([]);
+
   
+  const usuarioAleatorio = props.githubUser
+  const [Tecnologias, setTecnologias]  = React.useState([]);
+  const [Followers, setFollowers] = React.useState([])
+  const [isShowingMoreFollowers, setIsShowingMoreFollowers] = useState(false);
+  const [isShowingMoreTecnologias, setIsShowingMoreTecnologias] =
+  useState(false);
+  const [isShowingMoreFavoritePpl, setIsShowingMoreFavoritePpl] =
+  useState(false);
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
     'rafaballerini',
     'maykbrito',
     'Rocketseat',
+    'diego3g',
+    'omariosouto',
+    'rafaballerini',
+    'maykbrito',
+    'Rocketseat',
     'diego3g'
   ]
-  const [seguidores, setSeguidores] = React.useState([])
+  
   React.useEffect(function(){
     //GET
-    fetch('https://api.github.com/users/cleitonBarros/followers')
+    fetch(`https://api.github.com/users/${usuarioAleatorio}/followers`)
     .then(function (respotaDoServidor){
        return respotaDoServidor.json();
     })
     .then(function(respostaCompleta){
-        setSeguidores(respostaCompleta)
-  
+        setFollowers(respostaCompleta)
     })
+    .catch((error) => console.error(error));
     //API GraphQL
 
     fetch('https://graphql.datocms.com/',{
@@ -66,32 +89,58 @@ export default function Home(props) {
     })
     .then((response)=>response.json())// peda o retorno
     .then((respostaCompleta)=>{
-      const comunidadesDato = respostaCompleta.data.allCommunities;
+      const TecnologiasDato = respostaCompleta.data.allCommunities;
 
-      setComunidades(comunidadesDato)
+      setTecnologias(TecnologiasDato)
     })
 
   }, [])
 
+  function handleShowMoreFollowers(e) {
+    e.preventDefault();
+    setIsShowingMoreFollowers(!isShowingMoreFollowers);
+  }
+
+  function handleShowMoreTecnologias(e) {
+    e.preventDefault();
+    setIsShowingMoreTecnologias(!isShowingMoreTecnologias);
+  }
+  function handleShowMorePeople(e) {
+    e.preventDefault();
+    setIsShowingMoreFavoritePpl(!isShowingMoreFavoritePpl);
+  }
+
+
 function ProfileRelationsBox(Props){
     return(
-      <ProfileRelationsBoxWrapper>
+      <ProfileRelationsBoxWrapper  isShowingMoreItems={isShowingMoreFollowers} >
         <h2 className="smallTitle">
             {Props.title} ({Props.items.length})
           </h2>
           <ul>
-            {/*
-            {seguidores.map((item)=>{
+           
+            {Followers.map((item)=>{
               return(
                   <li key={item.id}>
-                    <a href={`/users/${item.id}`} >
+                    <a href={`/users/${item.id}`} passHref >
                       <img src={item.avatar_url} />
                       <span>{item.login}</span>
                     </a>
                   </li>
               )
-            })}*/}
+            })}
           </ul>
+          {Followers.length > 6 && (
+              <>
+                <hr />
+                <button
+                  className="toggleButton"
+                  onClick={(e) => handleShowMoreFollowers(e)}
+githubUser                >
+                  {isShowingMoreFollowers ? 'Ver menos' : 'Ver mais'}
+                </button>
+              </>
+            )}
         </ProfileRelationsBoxWrapper>
     )
   }
@@ -124,7 +173,7 @@ function ProfileRelationsBox(Props){
                   CreateSlug: usuarioAleatorio,
                 }
 
-                fetch('/api/comunidades',{
+                fetch('/api/Tecnologias',{
                   method: 'POST',
                   headers:{
                     'Content-Type': 'application/json',
@@ -134,8 +183,8 @@ function ProfileRelationsBox(Props){
                 .then(async(response)=>{
                   const dados = await response.json()
                   const comunidade = dados.registroCriado
-                   const comunidadesAtualizadas = [...comunidades, comunidade];
-                  setComunidades(comunidadesAtualizadas)
+                   const TecnologiasAtualizadas = [...Tecnologias, comunidade];
+                  setTecnologias(TecnologiasAtualizadas)
                 })
 
                
@@ -160,7 +209,7 @@ function ProfileRelationsBox(Props){
       </Box>
     </div>
     <div className="profileRelationsArea" style ={{ gridArea: 'profileRelationsArea'}}>
-      <ProfileRelationsBoxWrapper>
+      <ProfileRelationsBoxWrapper isShowingMoreItems={isShowingMoreFavoritePpl}>
         <h2 className="smallTitle">
           Comunidade ({pessoasFavoritas.length})
         </h2>
@@ -176,15 +225,26 @@ function ProfileRelationsBox(Props){
             )
           })}
         </ul>
+        {pessoasFavoritas.length > 6 && (
+              <>
+                <hr />
+                <button
+                  className="toggleButton"
+                  onClick={(e) => handleShowMorePeople(e)}
+                >
+                  {isShowingMoreFavoritePpl ? 'Ver menos' : 'Ver mais'}
+                </button>
+              </>
+            )}
       </ProfileRelationsBoxWrapper>
-      <ProfileRelationsBox  title="seguidores" items={seguidores} />
-      <ProfileRelationsBoxWrapper>
+      <ProfileRelationsBox  title="seguidores" items={Followers} />
+      <ProfileRelationsBoxWrapper isShowingMoreItems={isShowingMoreTecnologias}>
             <h2 className="smallTitle">
-              Comunidades ({comunidades.length})
+              Tecnologias ({Tecnologias.length})
             </h2>
            
             <ul>
-              {comunidades.map((itemAtual) => {
+              {Tecnologias.map((itemAtual) => {
                 return (
                   <li key={itemAtual.id}>
                     <a href={`/users/${itemAtual.id}`}>
@@ -195,10 +255,22 @@ function ProfileRelationsBox(Props){
                 )
               })}
             </ul>
+            {Tecnologias.length > 6 && (
+              <>
+                <hr />
+                <button
+                  className="toggleButton"
+                  onClick={(e) => handleShowMoreTecnologias(e)}
+                >
+                  {isShowingMoreTecnologias ? 'Ver menos' : 'Ver mais'}
+                </button>
+              </>
+            )}
 
       </ProfileRelationsBoxWrapper>
     </div>
   </MainGrid>
+  <ToastContainer newestOnTop />
   </>
   )
 }
@@ -224,7 +296,7 @@ export async function getServerSideProps(context) {
   const { githubUser } = jwt.decode(token);
   return {
     props: {
-      githubUser
+      githubUser: githubUser
     }, // will be passed to the page component as props
   }
 }
